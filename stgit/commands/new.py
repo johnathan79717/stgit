@@ -20,6 +20,12 @@ from stgit.commands import common
 from stgit.lib import git as gitlib, transaction
 from stgit.config import config
 
+import sys, os
+HERE = os.path.dirname(os.path.realpath(__file__))
+ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
+sys.path.insert(0, os.path.join(ROOT, 'hgext', 'reviewboard'))
+from hgrb.util import genid
+
 help = 'Create a new, empty patch'
 kind = 'patch'
 usage = ['[options] [--] [<name>]']
@@ -63,8 +69,9 @@ def func(parser, options, args):
     else:
         parser.error('incorrect number of arguments')
 
+    cid = '\n\nMozReview-Commit-ID: %s' % genid()
     cd = gitlib.CommitData(
-        tree = stack.head.data.tree, parents = [stack.head], message = '',
+        tree = stack.head.data.tree, parents = [stack.head], message = cid,
         author = gitlib.Person.author(), committer = gitlib.Person.committer())
     cd = common.update_commit_data(cd, options)
 
