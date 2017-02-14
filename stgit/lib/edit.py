@@ -13,7 +13,10 @@ def run_commit_msg_hook(repo, message):
     Return the edited commit message, or the original message if there
     is no commit-msg hook."""
 
-    hook_path = os.path.join(repo.directory, 'hooks', 'commit-msg')
+    git_path = repo.directory
+    while git_path != '/' and os.path.basename(git_path) != '.git':
+        git_path = os.path.dirname(git_path)
+    hook_path = os.path.join(git_path, 'hooks', 'commit-msg')
 
     if not os.access(hook_path, os.X_OK):
         return message
